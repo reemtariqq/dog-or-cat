@@ -1,0 +1,13 @@
+.App {
+  display: flex;
+  text-align: center;
+
+}
+
+
+.img{
+  aspect-ratio: 1;
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+}
