@@ -15,8 +15,8 @@ import (
 var db *sql.DB
 
 type Pref struct {
-	id        int64
-	selection string
+	Id        int64  `json:"id"`
+	Selection string `json:"selection"`
 }
 
 func getSelections() ([]Pref, error) {
@@ -30,7 +30,7 @@ func getSelections() ([]Pref, error) {
 
 	for rows.Next() {
 		var pref Pref
-		if err := rows.Scan(&pref.id, &pref.selection); err != nil {
+		if err := rows.Scan(&pref.Id, &pref.Selection); err != nil {
 			return nil, fmt.Errorf("get prefs", err)
 		}
 		prefs = append(prefs, pref)
@@ -55,6 +55,12 @@ func addSelection(pref string) (int64, error) {
 
 func getAllPrefs(c *gin.Context) {
 	prefs, _ := getSelections()
+	fmt.Println(prefs)
+
+	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+	c.Writer.Header().Add("Access-Control-Allow-Credentials", "true")
+	c.Writer.Header().Add("Content-Type", "application/json")
+
 	c.IndentedJSON(http.StatusOK, prefs)
 }
 
@@ -88,6 +94,7 @@ func main() {
 		log.Fatal(pingErr)
 	}
 	fmt.Println(" Connected")
+	fmt.Println(getSelections())
 
 	router := gin.Default()
 	router.GET("/prefs", getAllPrefs)

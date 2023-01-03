@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { postData } from "./utils";
 import "./App.css";
 import cat from "./cat.png";
 import dog from "./dog.jpeg";
-import { getData, postData } from "./utils";
 
 function App() {
   const [selection, setSelection] = useState<"cat" | "dog" | "">();
-  const [data, setData] = useState();
+  const [data, setData] = useState<Array<{ id: number; selection: string }>>();
 
   useEffect(() => {
-    getData("http://localhost:1111/prefs").then((data) => {
-      console.log(data.body)
+    axios.get("http://localhost:1111/prefs").then((res) => {
+      setData(res.data);
     });
-  }, []);
+  }, [data]);
 
   const submitSelection = () => {
     postData("http://localhost:1111/prefs", selection).then((data) => {
@@ -30,7 +31,7 @@ function App() {
             name="pref"
             value="dog"
             checked={selection === "dog"}
-            onClick={() => setSelection("dog")}
+            onChange={() => setSelection("dog")}
           />
           <label htmlFor="dog">Dog</label>
         </div>
@@ -43,7 +44,7 @@ function App() {
             name="pref"
             value="cat"
             checked={selection === "cat"}
-            onClick={() => setSelection("cat")}
+            onChange={() => setSelection("cat")}
           />
           <label htmlFor="cat">Cat</label>
         </div>
@@ -52,6 +53,14 @@ function App() {
       <button onClick={submitSelection} disabled={selection === ""}>
         I made my mind
       </button>
+      <div>
+        {data?.map((i) => (
+          <div key={i.id}>
+            <span> {i.id}</span>
+            <span> {i.selection}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
